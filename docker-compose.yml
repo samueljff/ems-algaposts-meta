@@ -1,14 +1,22 @@
 services:
   algaposts-rabbitmq:
     image: rabbitmq:3-management
-    restart: no
+    container_name: algaposts-rabbitmq
+    restart: unless-stopped
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI port
     environment:
       RABBITMQ_DEFAULT_USER: rabbitmq
       RABBITMQ_DEFAULT_PASS: rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
     volumes:
       - algaposts-rabbitmq:/var/lib/rabbitmq/
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 volumes:
   algaposts-rabbitmq:
